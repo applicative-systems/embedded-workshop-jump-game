@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jump-game"
+version = "0.1.0"
+description = "Webcam pose-driven jump-and-duck game for the Jetson Orin Nano"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "opencv-python",
+  "pillow",
+  "torch",
+  "ultralytics",
+  "onnx",
+  "onnxslim",
+  "tensorrt",
+]
+
+[project.scripts]
+jump-game = "jump_game:main"
+pose-bench = "pose_bench:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+py-modules = [
+  "coco",
+  "duck",
+  "game",
+  "gameover",
+  "jump_detector",
+  "jump_game",
+  "loop",
+  "pose_bench",
+  "record",
+  "sprite",
+  "takeoff",
+]

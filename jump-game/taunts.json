@@ -1,0 +1,36 @@
+[
+  { "image": "bobr.png",     "title": "BOBR K**WA!",      "text": "Polish meme culture hit you hard." },
+  { "image": "bobr.png",     "title": "CO ROBISZ?",       "text": "Nothing, apparently. Certainly not reacting." },
+  { "image": "bobr.png",     "title": "TAMA!",            "text": "He built a dam. You ran straight into it." },
+
+  { "image": "debian.png",   "title": "APT-GET!",         "text": "The imperative package manager DEBed you in the face!" },
+  { "image": "debian.png",   "title": "BROKEN PACKAGES!", "text": "You have held broken packages. And a broken ankle." },
+  { "image": "debian.png",   "title": "STABLE!",          "text": "Frozen for three years and still faster than you." },
+
+  { "image": "docker.png",   "title": "DOCKERFILED!",     "text": "You're locked up in a container." },
+  { "image": "docker.png",   "title": "OOMKILLED!",       "text": "Exit code 137. The whale does not negotiate." },
+  { "image": "docker.png",   "title": "LAYER CACHED!",    "text": "It worked on my machine." },
+
+  { "image": "ansible.png",  "title": "PLAYBOOK'D!",      "text": "TASK [react] fatal: FAILED! No hosts remaining." },
+  { "image": "ansible.png",  "title": "UNREACHABLE!",     "text": "You were unreachable. The obstacle was not." },
+  { "image": "ansible.png",  "title": "IDEMPOTENT!",      "text": "changed=0   unreachable=1   failed=1" },
+
+  { "image": "redhat.png",   "title": "UNENTITLED!",      "text": "Your subscription has lapsed. So have you." },
+  { "image": "redhat.png",   "title": "SELINUX DENIED!",  "text": "avc: denied { dodge } for pid=you comm=\"player\"" },
+  { "image": "redhat.png",   "title": "END OF LIFE!",     "text": "Support ended. So did your run." },
+
+  { "image": "ubuntu.png",   "title": "SNAPPED!",         "text": "The snap took eight seconds to launch. You had none." },
+  { "image": "ubuntu.png",   "title": "UBUNTU!",          "text": "\"I am because we are.\" You aren't, because you didn't move." },
+  { "image": "ubuntu.png",   "title": "LTS EXPIRED!",     "text": "Please upgrade. Preferably your reflexes." },
+
+  { "image": "opensuse.png", "title": "YAST!",            "text": "Yet another Squashed Tumbleweed." },
+  { "image": "opensuse.png", "title": "ZYPPER'D!",        "text": "The chameleon saw you coming. You never saw it." },
+  { "image": "opensuse.png", "title": "GEEKO!",           "text": "It blends into any background. You blend into the floor." },
+
+  { "image": "homebrew.png", "title": "BREWED!",          "text": "==> Installing 47 dependencies. You waited too long." },
+  { "image": "homebrew.png", "title": "POURED!",          "text": "==> Pouring you_flat.bottle.tar.gz" },
+  { "image": "homebrew.png", "title": "OUTDATED!",        "text": "Error: Your Xcode is too old. And your timing." },
+
+  { "image": null,           "title": "GAME OVER",        "text": "Beaten by a plain rectangle." },
+  { "image": null,           "title": "SEGFAULT!",        "text": "Core dumped. So were you." }
+]
