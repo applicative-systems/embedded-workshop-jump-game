@@ -76,26 +76,29 @@ class Recorder:
                      "width": width, "height": height, **meta})
 
         # Encoding a frame costs more than the game loop can spare, so it
-        # happens on its own thread. Unlike the display, a recording must not
-        # silently lose frames -- the queue is deep, and anything dropped is
-        # counted and reported at the end rather than passed over.
-        self._q = queue.Queue(maxsize=queue_size)
-        self._thread = threading.Thread(target=self._run, daemon=True)
-        self._thread.start()
+        # happens off the loop -- one thread per video. A single thread
+        # encoding both kept up with the stage video alone but dropped 24% of
+        # frames once --record-raw doubled its work; two encoders run on two
+        # cores. Unlike the display, a recording must not silently lose
+        # frames: the queues are deep, and anything dropped is counted and
+        # written to the trace as a "drop" line, so video and trace can still
+        # be lined up afterwards.
+        streams = ["_writer"] + (["_raw_writer"] if raw else [])
+        self._qs = {s: queue.Queue(maxsize=queue_size) for s in streams}
+        self._threads = [threading.Thread(target=self._run, args=(s,), daemon=True)
+                         for s in streams]
+        for t in self._threads:
+            t.start()
 
     def _write(self, obj):
         self._trace.write(json.dumps(obj, separators=(",", ":")) + "\n")
 
-    def _run(self):
-        while True:
-            item = self._q.get()
-            if item is None:
-                return
-            frame, raw = item
-            if self._writer is not None:
-                self._writer.write(frame)
-            if self._raw_writer is not None and raw is not None:
-                self._raw_writer.write(raw)
+    def _run(self, stream):
+        # Frames are only queued after the warm-up, by which time
+        # _open_writers() has run, so the writer is never None here.
+        q = self._qs[stream]
+        while (frame := q.get()) is not None:
+            getattr(self, stream).write(frame)
 
     def _open_writers(self):
         import cv2
@@ -138,25 +141,39 @@ class Recorder:
                 self._open_writers()
             return
 
-        self.video_frames += 1
-        try:
-            # Copied, not queued by reference. `frame` is the reusable stage
-            # canvas: the main loop starts overwriting it the moment this
-            # returns, so the encoder thread was writing torn composites of
-            # two game states -- and of states arbitrarily far apart whenever
-            # it fell behind. ThreadedDisplay.prepare() avoids exactly this
-            # hazard for the display; this is the same fix for the recorder.
-            # 0.54 ms, and only ever paid with --record.
-            #
-            # `raw` is already a copy (jump_game takes it before mirroring),
-            # so it must not be copied twice.
-            self._q.put_nowait((frame.copy(), raw))
-        except queue.Full:
+        # A frame goes to both videos or to neither, so the two stay
+        # frame-for-frame aligned with each other. `raw` is None only before
+        # the first pose, and then there is nothing to put in the raw video.
+        items = {"_writer": frame}
+        if "_raw_writer" in self._qs and raw is not None:
+            items["_raw_writer"] = raw
+        # Checked, then put: this is the only producer, so a queue with room
+        # here still has room below.
+        if any(self._qs[s].full() for s in items):
             self.dropped += 1
+            self._write({"kind": "drop", "f": self.frames - 1})
+            return
+
+        self.video_frames += 1
+        # Copied, not queued by reference. `frame` is the reusable stage
+        # canvas: the main loop starts overwriting it the moment this
+        # returns, so the encoder thread was writing torn composites of
+        # two game states -- and of states arbitrarily far apart whenever
+        # it fell behind. ThreadedDisplay.prepare() avoids exactly this
+        # hazard for the display; this is the same fix for the recorder.
+        # 0.54 ms, and only ever paid with --record.
+        #
+        # `raw` is already a copy (jump_game takes it before mirroring),
+        # so it must not be copied twice.
+        items["_writer"] = frame.copy()
+        for s, img in items.items():
+            self._qs[s].put_nowait(img)
 
     def close(self, summary=None):
-        self._q.put(None)
-        self._thread.join(timeout=10.0)
+        for q in self._qs.values():
+            q.put(None)
+        for t in self._threads:
+            t.join(timeout=10.0)
         for w in (self._writer, self._raw_writer):
             if w is not None:
                 w.release()
@@ -247,6 +264,8 @@ def load(path):
                 header = obj
             elif kind == "summary":
                 summary = obj
-            else:
+            elif kind is None:
                 frames.append(obj)
+            # "drop" lines mark video frames the encoder lost; a replay
+            # only needs the poses.
     return header, frames, summary
