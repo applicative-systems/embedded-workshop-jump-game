@@ -1,4 +1,4 @@
-# 38.8s -> 20.6s:
+# 33.8s -> 20.6s:
 # From analysing `systemd-analyze critical-chain`
 { lib, ... }:
 {
