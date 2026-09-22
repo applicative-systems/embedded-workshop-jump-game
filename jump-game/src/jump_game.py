@@ -1174,7 +1174,7 @@ def main():
                       imgsz=a.imgsz, signal=a.signal,
                       duck_signal=a.duck_signal, bars=not a.no_duck,
                       ground=a.ground, conf=a.conf, source=a.source or f"camera{a.camera}"),
-            raw=a.record_raw,
+            raw=a.record_raw, raw_size=(w, h),
         )
         print(f"recording to {rec.video_path} + {rec.trace_path}", flush=True)
 
