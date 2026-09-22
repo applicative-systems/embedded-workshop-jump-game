@@ -161,8 +161,8 @@ def main():
     # video positional, so `--models a,b,c video.webm` would not parse.
     p.add_argument(
         "--models",
-        default="yolo11n-pose",
-        help="comma-separated, e.g. yolo11n-pose,yolo11s-pose",
+        default="yolo26n-pose",
+        help="comma-separated, e.g. yolo26n-pose,yolo26s-pose",
     )
     p.add_argument("--outdir", default="out")
     p.add_argument("--imgsz", type=int, default=640)

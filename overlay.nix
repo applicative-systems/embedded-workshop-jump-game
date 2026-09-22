@@ -6,30 +6,30 @@ final: prev: {
       ({ name, hash }: {
         name = "${name}.pt";
         path = final.fetchurl {
-          url = "https://github.com/ultralytics/assets/releases/download/v8.3.0/${name}.pt";
+          url = "https://github.com/ultralytics/assets/releases/download/v8.4.0/${name}.pt";
           inherit hash;
         };
       })
       [
         {
-          name = "yolo11n-pose";
-          hash = "sha256-hp6D/N/9xzcfpONM2OUcg4zHKVcdFjXlFB4wdekxncA=";
+          name = "yolo26n-pose";
+          hash = "sha256-6zu4Jogorq9RXOwjpL+v15OUSob+mvlLp4I2CcFFIqk=";
         }
         {
-          name = "yolo11s-pose";
-          hash = "sha256-EGC9pKJwEgYOyiRvmyre6iLquwRaHlj40im+Kbfrwro=";
+          name = "yolo26s-pose";
+          hash = "sha256-oIOttCMDcorhTEvWvVbYDaRvgvslZNvW8x3MkuoyFkY=";
         }
         {
-          name = "yolo11m-pose";
-          hash = "sha256-KbF+rzoxF8vqkGCQ2+35FZ98aknbWOyLme0t/eHPbrI=";
+          name = "yolo26m-pose";
+          hash = "sha256-L78WNnAiJWoiYDVpXFw4k4TGcG6LuKuPzQ55dvBUQ8Q=";
         }
         {
-          name = "yolo11l-pose";
-          hash = "sha256-YZIavh8u2TC/KDKKFrMWInjNsjmh6CgLasgnEZ8TzuA=";
+          name = "yolo26l-pose";
+          hash = "sha256-rTPaiinqV3IxjEyYCETke1Z5LStjgVrU6OCcB4x9Gr8=";
         }
         {
-          name = "yolo11x-pose";
-          hash = "sha256-ATxDVDsHUbiRhIa6luAe5EpZBAaDoH+WzCK8wst3hfg=";
+          name = "yolo26x-pose";
+          hash = "sha256-CO2eAdIqbySLBPL5mSAWrKmjIlC5q1cFfYhqCdAmcA0=";
         }
       ]
   );

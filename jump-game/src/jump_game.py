@@ -995,7 +995,7 @@ def main():
     p = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    p.add_argument("--model", default="yolo11n-pose")
+    p.add_argument("--model", default="yolo26n-pose")
     p.add_argument("--camera", type=int, default=0, help="/dev/video<N>")
     p.add_argument("--source", help="play this video file instead of the camera")
     # 4:3, not 16:9. On the OBSBOT Tiny 2 the 16:9 modes are a vertical crop

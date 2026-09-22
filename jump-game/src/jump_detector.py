@@ -41,7 +41,7 @@ class JumpDetector:
 
     def __init__(
         self,
-        model="yolo11n-pose",
+        model="yolo26n-pose",
         fps=30.0,
         *,
         yolo=None,
