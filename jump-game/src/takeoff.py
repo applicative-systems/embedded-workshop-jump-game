@@ -62,6 +62,12 @@ REFRAC = 10
 # A detection whose person is suddenly a very different size from the recent
 # median is a different person, or a spurious box -- not a jump.
 BOX_LO, BOX_HI = 0.6, 1.6
+# ...but only for a frame or two. A rejected box never reaches the median, so
+# a *real* change of size -- someone else standing where the last person
+# stood, at another distance -- would be rejected forever, and nobody could
+# jump again. Outside a duck, not one frame is rejected in any recorded
+# session, so ten in a row (~0.5 s) is a different body.
+REJECT_RESET = 10
 
 # Player lock. Identity between frames is matched on horizontal position and
 # box width only -- never on vertical position, and never on whole-box
@@ -124,6 +130,17 @@ class TakeoffDetector:
         self._lock = None
         self._sig = None  # this frame's signature for `selected`
         self._key = None  # whose baseline `_ys` currently describes
+        # Unlocked identity. The detection index is not one: YOLO's index 0
+        # is just this frame's best box, so keying the baseline on it let a
+        # newcomer inherit the last person's box median, and REJECT_RESET's
+        # latch with it. A body is a number instead, bumped when the selected
+        # box is somewhere else sideways. Sideways only: an arm swing doubles
+        # the box width for the length of a jump, so width is no evidence of
+        # a new person frame to frame -- the lock can afford it because a
+        # mismatch there only skips a frame, while here it wipes a baseline.
+        self._body = 0
+        self._last = None  # the last selected signature, across dropouts
+        self._rejected = 0  # consecutive frames the box guard threw away
 
         # The duck runs a second state machine on a second signal, sharing
         # this object's person selection, lock and box bookkeeping. Two
@@ -179,7 +196,7 @@ class TakeoffDetector:
     def release(self):
         """Hand the game back to the room."""
         self._lock = None
-        self._key = self.selected  # same body; keep its baseline
+        self._key = self._body  # same body; keep its baseline
 
     @staticmethod
     def _signature(pose, i):
@@ -280,10 +297,17 @@ class TakeoffDetector:
         # nobody was matched is not a change of person -- it is the same
         # "dropped frames are not evidence" rule update_lift() follows, and
         # clearing on them starves the baseline until no jump ever registers.
+        if i is not None and self._sig is not None:
+            if self._lock is None and self._last is not None:
+                (cx0, w0), (cx, _w) = self._last, self._sig
+                if abs(cx - cx0) / w0 > LOCK_DX:
+                    self._body += 1
+            self._last = self._sig
         if i is not None:
-            key = "lock" if self._lock is not None else i
-            if key != self._key:
+            key = "lock" if self._lock is not None else self._body
+            if key != self._key or self._rejected >= REJECT_RESET:
                 self._key = key
+                self._rejected = 0
                 self._ys.clear()
                 self._boxes.clear()
                 # Same rule, same reason: a newcomer measured against the last
@@ -318,6 +342,11 @@ class TakeoffDetector:
         # samples when the player stands up, so the descent reads ~0 at once
         # rather than after a re-learning gap.
         frozen = self.ducking
+
+        if m is not None and not box_ok(m[1], BOX_LO) and not frozen:
+            self._rejected += 1
+        elif m is not None:
+            self._rejected = 0
 
         if m is not None and box_ok(m[1], BOX_LO):
             y, box_h, which = m

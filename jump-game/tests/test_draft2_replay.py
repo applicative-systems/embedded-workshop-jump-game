@@ -72,9 +72,12 @@ def test_the_replay_matches_what_the_live_session_recorded(frames):
 # Every recorded session in the repo, all of them jumping only. The peaks are
 # what DROP was chosen against; jump-logitech is the one that matters, because
 # it pre-loads its jumps half again as deeply as draft2 does and it is what
-# caught a threshold tuned on draft2 alone.
+# caught a threshold tuned on draft2 alone. jump-framework-builtin read 0.103
+# while the baseline was keyed on the detection index: at frame 80 the mirror
+# reflection outscores the player, became index 0, and was measured into the
+# player's baseline. See test_takeoff_identity.py.
 SESSIONS = [("draft2.jsonl", 0.090),
-            ("jump-framework-builtin.jsonl", 0.103),
+            ("jump-framework-builtin.jsonl", 0.094),
             ("jump-logitech.jsonl", 0.141)]
 
 
